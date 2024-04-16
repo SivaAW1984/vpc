@@ -6,7 +6,7 @@ locals {
    region = "us-east-1"
 }
 
-resource "aws_vpc_ipam" "test" {
+resource "aws_vpc_ipam" "this" {
   operating_regions {
     region_name = local.region
   }

@@ -4,7 +4,14 @@ provider "aws" {
 
 locals {
    region = "us-east-1"
+  
+  tags = {
+    Example    = local.name
+    GithubRepo = "terraform-aws-vpc"
+    GithubOrg  = "terraform-aws-modules"
+  }
 }
+
 
 resource "aws_vpc_ipam" "this" {
   operating_regions {

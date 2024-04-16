@@ -6,6 +6,12 @@ locals {
    region = "us-east-1"
 }
 
+resource "aws_vpc_ipam" "test" {
+  operating_regions {
+    region_name = local.region
+  }
+}
+
 resource "aws_vpc_ipam_pool" "this" {
   description                       = "IPv4 pool"
   address_family                    = "ipv4"

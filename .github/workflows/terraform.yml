@@ -1,66 +1,40 @@
-name: Terraform
-on:
-  pull_request:
+name: Terraform CI CD Pipeline for Deploying AWS Resources
+run-name: ${{ github.actor }} has triggered the pipeline
 
-env:
-  TERRAFORM_VERSION: 0.12.24
-  AWS_DEFAULT_REGION: us-east-1
+on:
+  workflow_dispatch
+ 
 
 jobs:
-  format:
-    name: Format
+  build-infra:
+    name: terraform-ci-cd
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    permissions:
+      id-token: write
+      contents: read
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2.1.0
-      - name: Format all
-        uses: hashicorp/terraform-github-actions@v0.8.0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
         with:
-          tf_actions_version: ${{ env.TERRAFORM_VERSION }}
-          tf_actions_comment: true
-          tf_actions_subcommand: fmt
-
-  validate:
-    name: Validate
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    strategy:
-      matrix:
-        dir:
-          - .
-          - examples/minimal
-          - examples/complete
-    steps:
+          role-to-assume: arn:aws:iam::425761905021:role/gh-role
+          aws-region: us-east-1
       - name: Checkout
-        uses: actions/checkout@v2.1.0
-      - name: Init
-        uses: hashicorp/terraform-github-actions@v0.8.0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tf_actions_version: ${{ env.TERRAFORM_VERSION }}
-          tf_actions_working_dir: ${{ matrix.dir }}
-          tf_actions_comment: true
-          tf_actions_subcommand: init
-      - name: Validate
-        uses: hashicorp/terraform-github-actions@v0.8.0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tf_actions_version: ${{ env.TERRAFORM_VERSION }}
-          tf_actions_working_dir: ${{ matrix.dir }}
-          tf_actions_comment: true
-          tf_actions_subcommand: validate
-
-  lint:
-    name: Lint
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2.1.0
-      - name: TFLint
-        run: docker run --rm -v ${PWD}:/data wata727/tflint
+        uses: actions/checkout@v2
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v2
+      - name: Terraform Init
+        id: init
+        run: terraform init
+        working-directory: ./Terraform-VPC
+      - name: Terraform Validate
+        id: validate
+        run: terraform validate
+        working-directory: ./Terraform-VPC
+      - name: Terraform Plan
+        id: plan
+        run: terraform plan
+        working-directory: ./Terraform-VPC
+      - name: Terraform Apply
+        id: apply
+        run: terraform apply --auto-approve
+        working-directory: ./Terraform-VPC

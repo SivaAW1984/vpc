@@ -4,6 +4,7 @@ provider "aws" {
 
 locals {
    region = "us-east-1"
+}
 
 resource "aws_vpc_ipam_pool" "this" {
   description                       = "IPv4 pool"

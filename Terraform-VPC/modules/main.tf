@@ -26,7 +26,8 @@ resource "aws_vpc_ipam_preview_next_cidr" "this" {
 }
 
 resource "aws_vpc" "vpc" {
-  cidr_block           = "${var.vpc_cidr}"
+  ipv4_ipam_pool_id   = aws_vpc_ipam_pool.this.id
+  ipv4_netmask_length = 28
   enable_dns_hostnames = true
   enable_dns_support   = true
   tags = {

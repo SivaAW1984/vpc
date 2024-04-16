@@ -32,7 +32,7 @@ resource "aws_vpc_ipam_pool" "this" {
 
 resource "aws_vpc_ipam_pool_cidr" "this" {
   ipam_pool_id = aws_vpc_ipam_pool.this.id
-  cidr         = "10.0.0.0/8"
+  cidr         = "19.0.0.0/16"
 }
 
 resource "aws_vpc_ipam_preview_next_cidr" "this" {

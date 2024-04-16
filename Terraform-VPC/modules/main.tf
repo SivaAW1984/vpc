@@ -7,7 +7,7 @@ resource "aws_vpc_ipam_pool" "this" {
   address_family                    = "ipv4"
   ipam_scope_id                     = aws_vpc_ipam.this.private_default_scope_id
   locale                            = local.region
-  allocation_default_netmask_length = 16
+  allocation_default_netmask_length = 28
 
   tags = local.tags
 }

@@ -1,55 +1,20 @@
-provider "aws" {
-  region = local.region
-}
+module "aft" {
+  source = "git@github.com:aws-ia/terraform-aws-control_tower_account_factory.git"
 
-locals {
-   region = "us-east-1"
-   name   = "ex-${basename(path.cwd)}"
-  
-  tags = {
-    Example    = local.name
-    GithubRepo = "terraform-aws-vpc"
-    GithubOrg  = "terraform-aws-modules"
-  }
-}
+  # Required Parameters
+  ct_management_account_id    = "953758143890"
+  log_archive_account_id      = "381492256674"
+  audit_account_id            = "975049967591"
+  aft_management_account_id   = "975049967591"
+  ct_home_region              = "us-east-1"
+  tf_backend_secondary_region = "us-west-2"
 
+  # Optional Parameters
+  terraform_distribution = "oss"
+  vcs_provider           = "codecommit"
 
-resource "aws_vpc_ipam" "this" {
-  operating_regions {
-    region_name = local.region
-  }
-}
-
-resource "aws_vpc_ipam_pool" "this" {
-  description                       = "IPv4 pool"
-  address_family                    = "ipv4"
-  ipam_scope_id                     = aws_vpc_ipam.this.private_default_scope_id
-  locale                            = local.region
-  allocation_default_netmask_length = 16
-
-  tags = local.tags
-}
-
-resource "aws_vpc_ipam_pool_cidr" "this" {
-  ipam_pool_id = aws_vpc_ipam_pool.this.id
-  cidr         = "19.0.0.0/16"
-}
-
-resource "aws_vpc_ipam_preview_next_cidr" "this" {
-  ipam_pool_id = aws_vpc_ipam_pool.this.id
-
-  depends_on = [
-    aws_vpc_ipam_pool_cidr.this
-  ]
-}
-
-resource "aws_vpc" "vpc" {
-  ipv4_ipam_pool_id   = aws_vpc_ipam_pool.this.id
-  ipv4_netmask_length = 28
-  enable_dns_hostnames = true
-  enable_dns_support   = true
-  tags = {
-    Name        = "${var.environment}-vpc"
-    Environment = "${var.environment}"
-  }
+  # Optional Feature Flags
+  aft_feature_delete_default_vpcs_enabled = false
+  aft_feature_cloudtrail_data_events      = false
+  aft_feature_enterprise_support          = false
 }

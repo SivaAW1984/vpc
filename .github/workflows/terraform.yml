@@ -38,8 +38,9 @@ jobs:
         uses: hashicorp/setup-terraform@v2
       - name: Terraform Init
         id: init
+        working-directory: ./Terraform-VPC/modules
         run: |
-          working-directory: ./Terraform-VPC/modules
+  
           pwd
           ls -l
           terraform init

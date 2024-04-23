@@ -35,7 +35,7 @@ jobs:
           ssh-add /home/runner/.ssh/github_actions
           pwd
           ls -l
-          cd Terraform-VPC/modules
+          cd /home/runner/work/vpc/vpc/Terraform-VPC/modules
           terraform init
       - name: Checkout
         uses: actions/checkout@v2

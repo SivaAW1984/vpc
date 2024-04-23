@@ -20,21 +20,18 @@ jobs:
           aws-region: us-east-1
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Add SSH key
-        env:
-          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
-        run: |
-          mkdir -p /home/runner/.ssh
-          ssh-keyscan github.com >> /home/runner/.ssh/known_hosts
-          echo "${{ secrets.ssh_key}}" > /home/runner/.ssh/github_actions
-          ls -l /home/runner/.ssh/github_actions
-          cat /home/runner/.ssh/github_actions
-          chmod 600 /home/runner/.ssh/github_actions
-          ssh-keygen -p -f /home/runner/.ssh/github_actions
-          ssh-agent -a $SSH_AUTH_SOCK > /dev/null
-          ssh-add /home/runner/.ssh/github_actions
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v2
+        env:
+          GIT_SSH_COMMAND: "echo '${{ secrets.PRIVATE_KEY }}' > id_rsa
+            && echo $(ssh-keyscan -t rsa github.com) > known_hosts
+            && chmod 400 id_rsa known_hosts
+            && ssh -i ./id_rsa -o UserKnownHostsFile=./known_hosts"
+        with:
+          tf_actions_version: ${{ env.TF_VERSION }}
+          tf_actions_subcommand: 'init'
+          tf_actions_working_dir: ${{ env.TF_ACTION_WORKING_DIR }}
+          tf_actions_comment: true    
       - name: Terraform Init
         id: init
         run: terraform init

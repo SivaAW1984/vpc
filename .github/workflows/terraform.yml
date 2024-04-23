@@ -44,7 +44,7 @@ jobs:
           pwd
           ls -l
           terraform init
-        working-directory: ./Terraform-VPC/modules
+      
       - name: Terraform Validate
         id: validate
         run: terraform validate

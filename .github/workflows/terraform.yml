@@ -18,20 +18,30 @@ jobs:
         with:
           role-to-assume:	arn:aws:iam::975050300181:role/test-GitHubActionsServiceRole-bx1JXkvsF7rR
           aws-region: us-east-1
+      - name: Setup SSH Keys and known_hosts
+        env:
+          PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          #  Copied from https://github.com/maddox/actions/blob/master/ssh/entrypoint.sh
+        run: |
+          SSH_PATH="$HOME/.ssh"
+
+          mkdir -p "$SSH_PATH"
+          touch "$SSH_PATH/known_hosts"
+
+         echo "$PRIVATE_KEY" > "$SSH_PATH/id_rsa"
+
+         chmod 700 "$SSH_PATH"
+         ssh-keyscan github.com >> ~/.ssh/known_hosts
+         chmod 600 "$SSH_PATH/known_hosts"
+         chmod 600 "$SSH_PATH/id_rsa"
+
+      eval $(ssh-agent)
+      ssh-add "$SSH_PATH/id_rsa"
+    
       - name: Checkout
         uses: actions/checkout@v2
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v2
-        env:
-          GIT_SSH_COMMAND: "echo '${{ secrets.PRIVATE_KEY }}' > id_rsa
-            && echo $(ssh-keyscan -t rsa github.com) > known_hosts
-            && chmod 400 id_rsa known_hosts
-            && ssh -i ./id_rsa -o UserKnownHostsFile=./known_hosts"
-        with:
-          tf_actions_version: ${{ env.TF_VERSION }}
-          tf_actions_subcommand: 'init'
-          tf_actions_working_dir: ${{ env.TF_ACTION_WORKING_DIR }}
-          tf_actions_comment: true    
       - name: Terraform Init
         id: init
         run: terraform init

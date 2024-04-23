@@ -20,6 +20,8 @@ jobs:
         with:
           role-to-assume:	arn:aws:iam::975050300181:role/test-GitHubActionsServiceRole-bx1JXkvsF7rR
           aws-region: us-east-1
+      - name: Checkout
+        uses: actions/checkout@v2
       - name: Add SSH key
         env:
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
@@ -37,8 +39,7 @@ jobs:
           ls -l
           cd /home/runner/work/vpc/vpc/Terraform-VPC/modules
           terraform init
-      - name: Checkout
-        uses: actions/checkout@v2
+     
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v2
       - name: Terraform Init

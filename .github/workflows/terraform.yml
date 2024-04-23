@@ -18,26 +18,19 @@ jobs:
         with:
           role-to-assume:	arn:aws:iam::975050300181:role/test-GitHubActionsServiceRole-bx1JXkvsF7rR
           aws-region: us-east-1
-      - name: Setup SSH Keys and known_hosts
+      - name: Add SSH key
         env:
-          PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          #  Copied from https://github.com/maddox/actions/blob/master/ssh/entrypoint.sh
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
         run: |
-          SSH_PATH="$HOME/.ssh"
-
-          mkdir -p "$SSH_PATH"
-          touch "$SSH_PATH/known_hosts"
-
-         echo "$PRIVATE_KEY" > "$SSH_PATH/id_rsa"
-
-         chmod 700 "$SSH_PATH"
-         ssh-keyscan github.com >> ~/.ssh/known_hosts
-         chmod 600 "$SSH_PATH/known_hosts"
-         chmod 600 "$SSH_PATH/id_rsa"
-
-      eval $(ssh-agent)
-      ssh-add "$SSH_PATH/id_rsa"
-    
+          mkdir -p /home/runner/.ssh
+          ssh-keyscan github.com >> /home/runner/.ssh/known_hosts
+          echo "${{ secrets.ssh_key}}" > /home/runner/.ssh/github_actions
+          ls -l /home/runner/.ssh/github_actions
+          cat /home/runner/.ssh/github_actions
+          chmod 600 /home/runner/.ssh/github_actions
+          ssh-keygen -p -f /home/runner/.ssh/github_actions
+          ssh-agent -a $SSH_AUTH_SOCK > /dev/null
+          ssh-add /home/runner/.ssh/github_actions  
       - name: Checkout
         uses: actions/checkout@v2
       - name: Set up Terraform

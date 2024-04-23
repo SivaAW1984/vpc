@@ -31,7 +31,9 @@ jobs:
           ssh-keygen -p -f /home/runner/.ssh/github_actions
           ssh-agent -a $SSH_AUTH_SOCK > /dev/null
           ssh-add /home/runner/.ssh/github_actions
-          cd ${{ github.workspace }}/Terraform-VPC/modules
+          pwd
+          ls -l
+          cd Terraform-VPC/modules
           terraform init
       - name: Checkout
         uses: actions/checkout@v2

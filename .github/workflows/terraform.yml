@@ -44,16 +44,16 @@ jobs:
           pwd
           ls -l
           terraform init
-      #   working-directory: ./Terraform-VPC/modules
-      # - name: Terraform Validate
-      #   id: validate
-      #   run: terraform validate
-      #   working-directory: ./Terraform-VPC/modules
-      # - name: Terraform Plan
-      #   id: plan
-      #   run: terraform plan
-      #   working-directory: ./Terraform-VPC/modules
-      # - name: Terraform Apply
-      #   id: apply
-      #   run: terraform apply --auto-approve
-      #   working-directory: ./Terraform-VPC/modules
+        working-directory: ./Terraform-VPC/modules
+      - name: Terraform Validate
+        id: validate
+        run: terraform validate
+        working-directory: ./Terraform-VPC/modules
+      - name: Terraform Plan
+        id: plan
+        run: terraform plan
+        working-directory: ./Terraform-VPC/modules
+      - name: Terraform Apply
+        id: apply
+        run: terraform apply --auto-approve
+        working-directory: ./Terraform-VPC/modules

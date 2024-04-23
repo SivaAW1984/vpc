@@ -39,6 +39,7 @@ jobs:
       - name: Terraform Init
         id: init
         run: |
+          cd ${{ github.workspace }}/vpc
           pwd
           ls -l
           terraform init

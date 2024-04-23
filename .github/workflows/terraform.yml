@@ -39,7 +39,7 @@ jobs:
       - name: Terraform Init
         id: init
         run: |
-          cd ${{ github.workspace }}/vpc
+          working-directory: ./Terraform-VPC/modules
           pwd
           ls -l
           terraform init

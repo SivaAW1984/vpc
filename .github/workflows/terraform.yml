@@ -7,59 +7,23 @@ on:
       - "master"
  
 
-jobs:
-  build-infra:
-    name: terraform-ci-cd
-    runs-on: ubuntu-latest
-    permissions:
+permissions:
       id-token: write
       contents: read
-    steps:
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume:	arn:aws:iam::975050300181:role/test-GitHubActionsServiceRole-bx1JXkvsF7rR
-          aws-region: us-east-1
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Add SSH key
-        env:
-          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
-        run: |
-          mkdir -p /home/runner/.ssh
-          ssh-keyscan github.com >> /home/runner/.ssh/known_hosts
-          echo "${{ secrets.ssh_key}}" > /home/runner/.ssh/github_actions
-          ls -l /home/runner/.ssh/github_actions
-          cat /home/runner/.ssh/github_actions
-          chmod 600 /home/runner/.ssh/github_actions
-          ssh-keygen -p -f /home/runner/.ssh/github_actions
-          ssh-agent -a $SSH_AUTH_SOCK > /dev/null
-          ssh-add /home/runner/.ssh/github_actions
-          pwd
-          ls -l
-          cd /home/runner/work/vpc/vpc/Terraform-VPC/modules
-          terraform init
-     
-      - name: Set up Terraform
-        uses: hashicorp/setup-terraform@v2
-      - name: Terraform Init
-        id: init
-        working-directory: ./Terraform-VPC/modules
-        run: |
-  
-          pwd
-          ls -l
-          terraform init
       
-      - name: Terraform Validate
-        id: validate
-        run: terraform validate
-        working-directory: ./Terraform-VPC/modules
-      - name: Terraform Plan
-        id: plan
-        run: terraform plan
-        working-directory: ./Terraform-VPC/modules
-      - name: Terraform Apply
-        id: apply
-        run: terraform apply --auto-approve
-        working-directory: ./Terraform-VPC/modules
+jobs: 
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: 'Az CLI login'
+      uses: azure/login@v1
+      with:
+          client-id: ${{ secrets.e65bf60d-d1bd-46ca-a5b8-1a5070f992ad }}
+          tenant-id: ${{ secrets.26fff28c-a1e5-41eb-9b25-335a0d48ccfb }}
+          subscription-id: ${{ secrets.f644f259-67c5-448c-bfae-3e2f4367894d }}
+  
+    - name: 'Run Azure CLI commands'
+      run: |
+          az account show
+          az group list
+          pwd 

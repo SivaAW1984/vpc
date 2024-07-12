@@ -20,8 +20,23 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: '8b68ce70-8b35-4d08-a52f-ba3325156d9c'
   
-    - name: 'Run Azure CLI commands'
-      run: |
-          az account show
-          az group list
-          pwd 
+     - name: Checkout
+        uses: actions/checkout@v2
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v2
+      - name: Terraform Init
+        id: init
+        run: terraform init
+        working-directory: ./Terraform-VPC/modules
+      - name: Terraform Validate
+        id: validate
+        run: terraform validate
+        working-directory: ./Terraform-VPC/modules
+      - name: Terraform Plan
+        id: plan
+        run: terraform plan
+        working-directory: ./Terraform-VPC/modules
+      - name: Terraform Apply
+        id: apply
+        run: terraform apply --auto-approve
+        working-directory: ./Terraform-VPC/modules

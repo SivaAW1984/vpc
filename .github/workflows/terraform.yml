@@ -7,10 +7,6 @@ on:
       - "master"
  
 
-permissions:
-      id-token: write
-      contents: read
-      
 jobs: 
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -18,9 +14,9 @@ jobs:
     - name: 'Az CLI login'
       uses: azure/login@v1
       with:
-          client-id: 'e65bf60d-d1bd-46ca-a5b8-1a5070f992ad'
-          tenant-id: '26fff28c-a1e5-41eb-9b25-335a0d48ccfb'
-          subscription-id: 'f644f259-67c5-448c-bfae-3e2f4367894d'
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
   
     - name: 'Run Azure CLI commands'
       run: |

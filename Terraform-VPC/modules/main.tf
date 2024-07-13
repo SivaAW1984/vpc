@@ -4,5 +4,5 @@ resource "POC" "rg_name" {
 
 resource "azurerm_resource_group" "rg" {
   location = var.resource_group_location
-  name     = POC.rg_name.idtest
+  name     = POC.rg_name.idtestnewbranch
 }
